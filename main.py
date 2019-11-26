@@ -10,8 +10,11 @@ class WordClock:
 
     def returnHourCat(self):
         self.__hour = datetime.now().hour
+        self.__min = datetime.now().minute
         if self.__hour >=12:
             self.__hourCat = self.__hour - 12
+        if self.__min >= 25:
+            self.__hourCat = self.__hourCat + 1
         return str(self.__hourCat)
 
     def returnMinuteCat(self):
