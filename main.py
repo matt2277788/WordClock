@@ -7,7 +7,6 @@ class WordClock:
         filepath = '/home/treffer/playground/WordClock/Layout'
         self.__letterMatrix = np.loadtxt(fname=filepath, dtype=str)
 
-
     def returnHourCat(self):
         self.__hour = datetime.now().hour
         self.__min = datetime.now().minute
@@ -24,7 +23,6 @@ class WordClock:
         self.__minuteCategory = str(self.__minuteCategory[0])
         self.__minuteCategory = self.__minuteCategory.split("[")[1].split("]")[0]
         return self.__minuteCategory
-
 
     def searchWords(self, wordList = []):
         s = self.__letterMatrix
@@ -84,9 +82,9 @@ dicHour  =	{
 }
 dicEnd  =	{
   "1": "Kuss",
-  "2": "Kiss U",
-  "3": "Miss U",
-  "4": "Love U",
+  "2": "Kiss You",
+  "3": "Miss You",
+  "4": "Love You",
 }
 
 #Instanciate
