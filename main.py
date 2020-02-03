@@ -1,6 +1,8 @@
 import numpy as np
 from datetime import datetime
 import random
+#import board
+#import neopixel
 
 class WordClock:
     def __init__(self):
@@ -45,8 +47,7 @@ dicIntro  =	{
   "5": "Hi Braunbert",
   "6": "Meine Katja",
   "7": "Meine Sonne",
-  "8": "Meine Sterne",
-  "9": "Hi Schatz",
+  "8": "Hi Schatz",
 }
 dicItIs  =	{
   "1": "Es ist",
@@ -94,7 +95,7 @@ ins = WordClock()
 hourCat = ins.returnHourCat()
 minCat = ins.returnMinuteCat()
 randItIs = str(random.randint(1,2))
-randIntro = str(random.randint(1,9))
+randIntro = str(random.randint(1,8))
 randEnd = str(random.randint(1,4))
 
 #Get locations of used words
@@ -103,6 +104,12 @@ ins.searchWords(dicItIs.get(randItIs).split())
 ins.searchWords(dicMinute.get(minCat).split())
 ins.searchWords(dicHour.get(hourCat).split())
 ins.searchWords(dicEnd.get(randEnd).split())
+
+
+
+
+#pixels = neopixel.NeoPixel(board.D18, 30)
+
 
 
 
