@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 import numpy as np
 from datetime import datetime
 import random
@@ -10,7 +11,6 @@ class WordClock:
         filepath = '/home/treffer/playground/WordClock/Layout'
         self.__letterMatrix = np.loadtxt(fname=filepath, dtype=str)
         self.__letterString = ("".join(self.__letterMatrix.tolist()))
-        print(self.__letterMatrix.shape)
         self.__hourCat = 0
         self.__minCat = 0
 
@@ -38,7 +38,6 @@ class WordClock:
     def searchLedPixel(self, wordList):
         s = self.__letterMatrix
         test = self.defineExceptionStateFiveTen()
-        print(test)
         pinVector = []
         for item in wordList:
             row = 0
@@ -140,7 +139,6 @@ randEnd = str(random.randint(1,4))
 
 #get Word List to Pass to function for finding postion of LED pixels
 wordListToPass = [dicIntro.get(randIntro).split(), dicItIs.get(randItIs).split(),  dicMinute.get(minCat).split(), dicHour.get(hourCat).split(), dicEnd.get(randEnd).split()]
-#print(wordListToPass)
 wordListToPass = itertools.chain.from_iterable(wordListToPass)
 
 
