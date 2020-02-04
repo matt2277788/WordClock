@@ -9,16 +9,20 @@ class WordClock:
     def __init__(self):
         filepath = '/home/treffer/playground/WordClock/Layout'
         self.__letterMatrix = np.loadtxt(fname=filepath, dtype=str)
+        self.__letterString = ("".join(self.__letterMatrix.tolist()))
+        print(self.__letterMatrix.shape)
+        self.__hourCat = 0
+        self.__minCat = 0
 
     def returnHourCat(self):
         self.__hour = datetime.now().hour
         self.__min = datetime.now().minute
         if (self.__hour == 12 and self.__min>=25):
             self.__hourCat = 1
-        elif self.__hour > 12:
-            self.__hourCat = self.__hour - 12
-        elif self.__min >= 25:
-            self.__hourCat = self.__hourCat + 1
+        elif (self.__hour > 12 and self.__min >=25):
+            self.__hourCat = self.__hour - 11
+        elif (self.__hour > 12 and self.__min <25):
+            self.__hourCat = self.__hourCat -12
         else:
             self.__hourCat = self.__hour
         return str(self.__hourCat)
@@ -33,18 +37,46 @@ class WordClock:
 
     def searchLedPixel(self, wordList):
         s = self.__letterMatrix
+        test = self.defineExceptionStateFiveTen()
+        print(test)
         pinVector = []
         for item in wordList:
             row = 0
             for line in s:
-                if item in ''.join(line):
+                if (item in ''.join(line) and test==False):
+                    print(item + " ["+ str(row) + "]["+str(line.find(item)) + ":" + str(line.find(item)+len(item))+ "]")
+                    for l in range (0,len(item)):
+                        pinLightUp = ((row)*13) + (line.find(item) + l)
+                        pinVector.append(pinLightUp)
+                    break
+                elif (item in ''.join(line) and test==True):
                     print(item + " ["+ str(row) + "]["+str(line.find(item)) + ":" + str(line.find(item)+len(item))+ "]")
                     for l in range (0,len(item)):
                         pinLightUp = ((row)*13) + (line.find(item) + l)
                         pinVector.append(pinLightUp)
                 else:
                     row += 1
+
         return pinVector
+
+    def getLetterString(self):
+        return self.__letterString
+
+    def defineExceptionStateFiveTen(self):
+        minCat = self.returnMinuteCat()
+        hourCat = self.returnHourCat()
+        doubleFiveAndTen = False
+        if (minCat == 1 and hourCat == 5):
+            doubleFiveAndTen = True;
+        if (minCat == 11 and hourCat == 5):
+            doubleFiveAndTen = True;
+        if (minCat == 2 and hourCat == 10):
+            doubleFiveAndTen = True;
+        if (minCat == 10 and hourCat == 10):
+            doubleFiveAndTen = True;
+        return doubleFiveAndTen
+
+
 
 #Setup Dictionaries for different word groups
 dicIntro  =	{
@@ -108,15 +140,27 @@ randEnd = str(random.randint(1,4))
 
 #get Word List to Pass to function for finding postion of LED pixels
 wordListToPass = [dicIntro.get(randIntro).split(), dicItIs.get(randItIs).split(),  dicMinute.get(minCat).split(), dicHour.get(hourCat).split(), dicEnd.get(randEnd).split()]
+#print(wordListToPass)
 wordListToPass = itertools.chain.from_iterable(wordListToPass)
 
 
 #pins to light up
-print(ins.searchLedPixel(wordListToPass))
+ledList = ins.searchLedPixel(wordListToPass)
+print(ledList)
+
+
+#Test for right Output
+#letterList = ins.getLetterString()
+#output = []
+# for i in range(0, len(ledList)):
+#     s = ledList[i]
+#     f = letterList[s]
+#     output.append(f)
+#     print(s , f)
+# print(output)
 
 
 #pixels = neopixel.NeoPixel(board.D18, 30)
-
 
 
 
