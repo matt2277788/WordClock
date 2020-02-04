@@ -22,7 +22,7 @@ class WordClock:
         elif (self.__hour > 12 and self.__min >=25):
             self.__hourCat = self.__hour - 11
         elif (self.__hour > 12 and self.__min <25):
-            self.__hourCat = self.__hourCat -12
+            self.__hourCat = self.__hour -12
         else:
             self.__hourCat = self.__hour
         return str(self.__hourCat)
