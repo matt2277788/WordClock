@@ -3,6 +3,7 @@ import numpy as np
 from datetime import datetime
 import random
 import itertools
+import sched, time
 #import board
 #import neopixel
 
@@ -127,35 +128,52 @@ dicEnd  =	{
   "4": "Love You",
 }
 
-#Instanciate
-ins = WordClock()
 
-#get Dictionary Keys
-hourCat = ins.returnHourCat()
-minCat = ins.returnMinuteCat()
-randItIs = str(random.randint(1,2))
-randIntro = str(random.randint(1,8))
-randEnd = str(random.randint(1,4))
+def tellTime():
+    #Instanciate
+    ins = WordClock()
 
-#get Word List to Pass to function for finding postion of LED pixels
-wordListToPass = [dicIntro.get(randIntro).split(), dicItIs.get(randItIs).split(),  dicMinute.get(minCat).split(), dicHour.get(hourCat).split(), dicEnd.get(randEnd).split()]
-wordListToPass = itertools.chain.from_iterable(wordListToPass)
+    #get Dictionary Keys
+    hourCat = ins.returnHourCat()
+    minCat = ins.returnMinuteCat()
+    randItIs = str(random.randint(1,2))
+    randIntro = str(random.randint(1,8))
+    randEnd = str(random.randint(1,4))
 
-
-#pins to light up
-ledList = ins.searchLedPixel(wordListToPass)
-print(ledList)
+    #get Word List to Pass to function for finding postion of LED pixels
+    wordListToPass = [dicIntro.get(randIntro).split(), dicItIs.get(randItIs).split(),  dicMinute.get(minCat).split(), dicHour.get(hourCat).split(), dicEnd.get(randEnd).split()]
+    wordListToPass = itertools.chain.from_iterable(wordListToPass)
 
 
-#Test for right Output
-#letterList = ins.getLetterString()
-#output = []
-# for i in range(0, len(ledList)):
-#     s = ledList[i]
-#     f = letterList[s]
-#     output.append(f)
-#     print(s , f)
-# print(output)
+    #pins to light up
+    ledList = ins.searchLedPixel(wordListToPass)
+    #print(ledList)
+
+    #Test for right Output
+    letterList = ins.getLetterString()
+    output = []
+    for i in range(0, len(ledList)):
+         s = ledList[i]
+         f = letterList[s]
+         output.append(f)
+         #print(s , f)
+    return output, ledList
+
+
+wordOutput, ledList = tellTime()
+with open('output_test.txt', 'a') as f:
+    print(wordOutput, ledList, file=f)
+
+# Running tellTime() every 60 sec
+s = sched.scheduler(time.time, time.sleep)
+def do_something():
+    wordOutput, ledList = tellTime()
+    with open('output_test.txt', 'a') as f:
+        print(wordOutput, ledList, file=f)
+    s.enter(60, 1, do_something)
+
+s.enter(60, 1, do_something)
+s.run()
 
 
 #pixels = neopixel.NeoPixel(board.D18, 30)
