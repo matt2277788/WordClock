@@ -1,8 +1,10 @@
 # Python Base Image from https://hub.docker.com/r/arm32v7/python/
-FROM arm32v7/python:3
+FROM python:3.6-alpine
 
 # Copy the Python Script to blink LED
 COPY main.py ./
+COPY Layout ./
+COPY output_test.txt ./
 COPY requirements.txt ./
 
 # Intall the rpi.gpio python module

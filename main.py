@@ -9,7 +9,7 @@ import neopixel
 
 class WordClock:
     def __init__(self):
-        filepath = '/home/treffer/playground/WordClock/Layout'
+        filepath = 'Layout'
         self.__letterMatrix = np.loadtxt(fname=filepath, dtype=str)
         self.__letterString = ("".join(self.__letterMatrix.tolist()))
         self.__hourCat = 0
@@ -159,25 +159,36 @@ def tellTime():
          #print(s , f)
     return output, ledList
 
-
+#setup of raspi and neopixel
 pixels = neopixel.NeoPixel(board.D18, 255)
+
+#reset all pixel to 0
+pixels.fill((0,0,0))
+
+#initially calling tellTime() and set LEDs
+wordOutput, ledList = tellTime()
+for i in ledList:
+    pixels[i]= ((25,25,55 ))
 
 # Running tellTime() every 60 sec
 s = sched.scheduler(time.time, time.sleep)
-def do_something():
+def schedTellTime():
     wordOutput, ledList = tellTime()
     with open('output_test.txt', 'a') as f:
         print(wordOutput, ledList, file=f)
-        
-    a = [0,1,2,3]
-    for i in a:
-        pixels[i]= ((55,55,55 ))
-    #pixels.fill((0,0,0))
-    
-    s.enter(60, 1, do_something)
 
-s.enter(60, 1, do_something)
+    pixels.fill((0,0,0))
+    for i in ledList:
+        pixels[i]= ((225,25,55 ))
+
+
+    s.enter(60, 1, schedTellTime)
+
+s.enter(60, 1, schedTellTime)
 s.run()
 
-
-
+# Prüfen: zehn nach halb zehn - fünf nach halb fünf
+# Bei Abbruch des Programms alle LEDs aus
+# Ausführung des Programs bei boot
+# Pulsierendes Herz am Ende
+# Farben ggf. varieren
