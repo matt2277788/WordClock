@@ -4,8 +4,8 @@ from datetime import datetime
 import random
 import itertools
 import sched, time
-#import board
-#import neopixel
+import board
+import neopixel
 
 class WordClock:
     def __init__(self):
@@ -79,7 +79,7 @@ class WordClock:
 
 
 #Setup Dictionaries for different word groups
-dicIntro  =	{
+dicIntro  = {
   "1": "Frau Baby",
   "2": "Frau Baby Bernd",
   "3": "Baby Bernd",
@@ -89,11 +89,11 @@ dicIntro  =	{
   "7": "Meine Sonne",
   "8": "Hi Schatz",
 }
-dicItIs  =	{
+dicItIs  =  {
   "1": "Es ist",
   "2": "Wir haben",
 }
-dicMinute  =	{
+dicMinute  =    {
   "0": "Uhr",
   "1": "fünf nach",
   "2": "zehn nach",
@@ -107,7 +107,7 @@ dicMinute  =	{
   "10": "zehn vor",
   "11": "fünf vor"
 }
-dicHour  =	{
+dicHour  =  {
   "1": "eins",
   "2": "zwei",
   "3": "drei",
@@ -121,7 +121,7 @@ dicHour  =	{
   "11": "elf",
   "12": "zwölf",
 }
-dicEnd  =	{
+dicEnd  =   {
   "1": "Kuss",
   "2": "Kiss You",
   "3": "Miss You",
@@ -160,9 +160,7 @@ def tellTime():
     return output, ledList
 
 
-wordOutput, ledList = tellTime()
-with open('output_test.txt', 'a') as f:
-    print(wordOutput, ledList, file=f)
+pixels = neopixel.NeoPixel(board.D18, 255)
 
 # Running tellTime() every 60 sec
 s = sched.scheduler(time.time, time.sleep)
@@ -170,13 +168,16 @@ def do_something():
     wordOutput, ledList = tellTime()
     with open('output_test.txt', 'a') as f:
         print(wordOutput, ledList, file=f)
+        
+    a = [0,1,2,3]
+    for i in a:
+        pixels[i]= ((55,55,55 ))
+    #pixels.fill((0,0,0))
+    
     s.enter(60, 1, do_something)
 
 s.enter(60, 1, do_something)
 s.run()
-
-
-#pixels = neopixel.NeoPixel(board.D18, 30)
 
 
 
