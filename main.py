@@ -80,52 +80,52 @@ class WordClock:
 
 #Setup Dictionaries for different word groups
 dicIntro  = {
-  "1": "Frau Baby",
-  "2": "Frau Baby Bernd",
-  "3": "Baby Bernd",
-  "4": "Mein Braunling",
-  "5": "Hi Braunbert",
-  "6": "Meine Katja",
-  "7": "Meine Sonne",
-  "8": "Hi Schatz",
+  "1": "FRAU BABY",
+  "2": "FRAU BABY BERND",
+  "3": "BABY BERND",
+  "4": "MEIN BRAUNLING",
+  "5": "HI BRAUNBERT",
+  "6": "MEINE KATJA",
+  "7": "MEINE SONNE",
+  "8": "HI SCHATZ",
 }
 dicItIs  =  {
-  "1": "Es ist",
-  "2": "Wir haben",
+  "1": "ES IST",
+  "2": "WIR HABEN",
 }
 dicMinute  =    {
-  "0": "Uhr",
-  "1": "fünf nach",
-  "2": "zehn nach",
-  "3": "viertel nach",
-  "4": "zwanzig nach",
-  "5": "fünf vor halb",
-  "6": "halb",
-  "7": "fünf nach halb",
-  "8": "zehn nach halb",
-  "9": "dreiviertel",
-  "10": "zehn vor",
-  "11": "fünf vor"
+  "0": "UHR",
+  "1": "fUENF NACH",
+  "2": "ZEHN NACH",
+  "3": "VIERTEL NACH",
+  "4": "ZWANZIG NACH",
+  "5": "FUENF VOR HALB",
+  "6": "HALB",
+  "7": "FUENF NACH HALB",
+  "8": "ZEHN NACH HALB",
+  "9": "DREIVIERTEL",
+  "10": "ZEHN VOR",
+  "11": "FUENF VOR"
 }
 dicHour  =  {
-  "1": "eins",
-  "2": "zwei",
-  "3": "drei",
-  "4": "vier",
-  "5": "fünf",
-  "6": "sechs",
-  "7": "sieben",
-  "8": "acht",
-  "9": "neun",
-  "10": "zehn",
-  "11": "elf",
-  "12": "zwölf",
+  "1": "EINS",
+  "2": "ZWEI",
+  "3": "DREI",
+  "4": "VIER",
+  "5": "FUENF",
+  "6": "SECHS",
+  "7": "SIEBEN",
+  "8": "ACHT",
+  "9": "NEUN",
+  "10": "ZEHN",
+  "11": "ELF",
+  "12": "ZWOELF",
 }
 dicEnd  =   {
-  "1": "Kuss",
-  "2": "Kiss You",
-  "3": "Miss You",
-  "4": "Love You",
+  "1": "KUSS",
+  "2": "KISS YOU",
+  "3": "MISS YOU",
+  "4": "LOVE YOU",
 }
 
 
@@ -159,6 +159,7 @@ def tellTime():
          #print(s , f)
     return output, ledList
 
+
 #setup of raspi and neopixel
 pixels = neopixel.NeoPixel(board.D18, 255)
 
@@ -168,14 +169,14 @@ pixels.fill((0,0,0))
 #initially calling tellTime() and set LEDs
 wordOutput, ledList = tellTime()
 for i in ledList:
-    pixels[i]= ((25,25,55 ))
+    pixels[i]= ((25,25,55))
 
 # Running tellTime() every 60 sec
 s = sched.scheduler(time.time, time.sleep)
 def schedTellTime():
     wordOutput, ledList = tellTime()
     with open('output_test.txt', 'a') as f:
-        print(wordOutput, ledList, file=f)
+        print(wordOutput, ledList, file= f)
 
     pixels.fill((0,0,0))
     for i in ledList:
@@ -186,6 +187,7 @@ def schedTellTime():
 
 s.enter(60, 1, schedTellTime)
 s.run()
+
 
 # Prüfen: zehn nach halb zehn - fünf nach halb fünf
 # Bei Abbruch des Programms alle LEDs aus
