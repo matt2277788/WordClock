@@ -68,19 +68,19 @@ class WordClock:
         hourCat = self.returnHourCat()
         doubleFiveAndTen = False
         if (minCat == 1 and hourCat == 5): #fünf nach fünf
-            doubleFiveAndTen = True;
+            doubleFiveAndTen = True
         if (minCat == 11 and hourCat == 5): #fünf vor fünf
-            doubleFiveAndTen = True;
+            doubleFiveAndTen = True
         if (minCat == 5 and hourCat == 5): #fünf vor halb fünf
-            doubleFiveAndTen = True;
+            doubleFiveAndTen = True
         if (minCat == 7 and hourCat == 5): #fünf nach halb fünf
-            doubleFiveAndTen = True;
+            doubleFiveAndTen = True
         if (minCat == 2 and hourCat == 10): #zehn nach zehn
-            doubleFiveAndTen = True;
+            doubleFiveAndTen = True
         if (minCat == 10 and hourCat == 10): #zehn vor zehn
-            doubleFiveAndTen = True;
+            doubleFiveAndTen = True
         if (minCat == 8 and hourCat == 10): #zehn nach halb zehn
-            doubleFiveAndTen = True;
+            doubleFiveAndTen = True
         return doubleFiveAndTen
 
 
