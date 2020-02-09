@@ -6,6 +6,7 @@ import itertools
 import sched, time
 import board
 import neopixel
+import atexit
 
 class WordClock:
     def __init__(self):
@@ -66,13 +67,19 @@ class WordClock:
         minCat = self.returnMinuteCat()
         hourCat = self.returnHourCat()
         doubleFiveAndTen = False
-        if (minCat == 1 and hourCat == 5):
+        if (minCat == 1 and hourCat == 5): #fünf nach fünf
             doubleFiveAndTen = True;
-        if (minCat == 11 and hourCat == 5):
+        if (minCat == 11 and hourCat == 5): #fünf vor fünf
             doubleFiveAndTen = True;
-        if (minCat == 2 and hourCat == 10):
+        if (minCat == 5 and hourCat == 5): #fünf vor halb fünf
             doubleFiveAndTen = True;
-        if (minCat == 10 and hourCat == 10):
+        if (minCat == 7 and hourCat == 5): #fünf nach halb fünf
+            doubleFiveAndTen = True;
+        if (minCat == 2 and hourCat == 10): #zehn nach zehn
+            doubleFiveAndTen = True;
+        if (minCat == 10 and hourCat == 10): #zehn vor zehn
+            doubleFiveAndTen = True;
+        if (minCat == 8 and hourCat == 10): #zehn nach halb zehn
             doubleFiveAndTen = True;
         return doubleFiveAndTen
 
@@ -95,7 +102,7 @@ dicItIs  =  {
 }
 dicMinute  =    {
   "0": "UHR",
-  "1": "fUENF NACH",
+  "1": "FUENF NACH",
   "2": "ZEHN NACH",
   "3": "VIERTEL NACH",
   "4": "ZWANZIG NACH",
@@ -163,34 +170,37 @@ def tellTime():
 #setup of raspi and neopixel
 pixels = neopixel.NeoPixel(board.D18, 255)
 
-#reset all pixel to 0
-pixels.fill((0,0,0))
+def ledShutOff(): #reset all pixel to 0
+    pixels.fill((0,0,0))
 
-#initially calling tellTime() and set LEDs
-wordOutput, ledList = tellTime()
-for i in ledList:
-    pixels[i]= ((25,25,55))
+def lightUpLeds():
+    randRed= random.randint(1,155)
+    randGreen= random.randint(1,155)
+    randBlue=random.randint(1,155)
+
+    ledShutOff() #calling function to turn LEDs off
+    wordOutput, ledList = tellTime() #get values for WordOutput and ledList
+    for i in ledList:                   # turn LEDs on
+        pixels[i]= ((randRed,randGreen,randBlue)) #setting color of individual LED pixel
+    with open('output_test.txt', 'a') as f:
+        print(wordOutput, ledList, file= f)
+
+lightUpLeds() #initially calling function
 
 # Running tellTime() every 60 sec
 s = sched.scheduler(time.time, time.sleep)
 def schedTellTime():
-    wordOutput, ledList = tellTime()
-    with open('output_test.txt', 'a') as f:
-        print(wordOutput, ledList, file= f)
-
-    pixels.fill((0,0,0))
-    for i in ledList:
-        pixels[i]= ((225,25,55 ))
-
-
+    lightUpLeds()
     s.enter(60, 1, schedTellTime)
 
 s.enter(60, 1, schedTellTime)
 s.run()
 
 
-# Prüfen: zehn nach halb zehn - fünf nach halb fünf
+atexit.register(ledShutOff)
+
+
 # Bei Abbruch des Programms alle LEDs aus
 # Ausführung des Programs bei boot
 # Pulsierendes Herz am Ende
-# Farben ggf. varieren
+# Prüfen: zehn nach halb zehn - fünf nach halb fünf
