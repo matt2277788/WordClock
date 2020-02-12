@@ -163,7 +163,7 @@ def tellTime():
          s = ledList[i]
          f = letterList[s]
          output.append(f)
-         #print(s , f)
+         print(s, f)
     return output, ledList
 
 
