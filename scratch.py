@@ -1,4 +1,5 @@
 from main import WordClock
+from scratch2 import function1
 
-instanceWC = WordClock()
-print(instanceWC.getLedList)
+#instanceWC = WordClock()
+function1()
