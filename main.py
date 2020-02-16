@@ -7,6 +7,7 @@ import sched, time
 import board
 import neopixel
 import atexit
+import re
 
 class WordClock:
     def __init__(self):
@@ -15,6 +16,9 @@ class WordClock:
         self.__letterString = ("".join(self.__letterMatrix.tolist()))
         self.__hourCat = 0
         self.__minCat = 0
+        self.__layoutRows = 15
+        self.__layoutColumns = 13
+
 
     def returnHourCat(self):
         self.__hour = datetime.now().hour
@@ -36,32 +40,56 @@ class WordClock:
         self.__minuteCategory = str(self.__minuteCategory[0])
         self.__minuteCategory = self.__minuteCategory.split("[")[1].split("]")[0]
         return self.__minuteCategory
+    
 
-    def searchLedPixel(self, wordList):
-        s = self.__letterMatrix
+    def getLedList(self, wordList):
+        letterString = self.__letterString
         test = self.defineExceptionStateFiveTen()
         pinVector = []
         for item in wordList:
-            row = 0
-            for line in s:
-                if (item in ''.join(line) and test==False):
-                    print(item + " ["+ str(row) + "]["+str(line.find(item)) + ":" + str(line.find(item)+len(item))+ "]")
-                    for l in range (0,len(item)):
-                        pinLightUp = ((row)*13) + (line.find(item) + l)
-                        pinVector.append(pinLightUp)
-                    break
-                elif (item in ''.join(line) and test==True):
-                    print(item + " ["+ str(row) + "]["+str(line.find(item)) + ":" + str(line.find(item)+len(item))+ "]")
-                    for l in range (0,len(item)):
-                        pinLightUp = ((row)*13) + (line.find(item) + l)
-                        pinVector.append(pinLightUp)
-                else:
-                    row += 1
-
+            if (item in letterString and test==False):
+                self.determinLeds(letterString, item, pinVector)
+            else:
+                if (item != "fuenf" or item != "zehn"):
+                    self.determinLeds(letterString, item, pinVector)
+                else: 
+                    startOfDoubleItems = [m.start() for m in re.finditer(item, letterString)]
+                    for j in startOfDoubleItems:
+                        for i in range (j, j+ len(item)):
+                            pinVector.append(i)
         return pinVector
+
+    def determinLeds(self, letterString, item, pinVector):
+        itemStart = letterString.find(item)
+        itemLength = letterString.find(item)+len(item)
+        for i in range (itemStart, itemLength):
+            pinVector.append(i)
+
+    def getFlippedLedList(self, pinVector):
+        ledArray = np.zeros(len(self.__letterString), int)
+        ledArray[pinVector] = 1
+        ledMatrix = np.reshape(ledArray, (self.__layoutRows,self.__layoutColumns))
+        for i in range(self.__layoutRows):
+            if (i % 2 != 0):
+                ledMatrix[i] = ledMatrix[i][::-1]
+        flippedPinMatrix = ledMatrix.ravel()
+        flippedPinVector = []
+        for j in range (len(flippedPinMatrix)):
+            if (flippedPinMatrix[j] != 0):
+                flippedPinVector.append(j)
+
+        return flippedPinVector
 
     def getLetterString(self):
         return self.__letterString
+
+    def getFlippedLetterString(self):
+        letterMatrix = self.__letterMatrix
+        for i in range(self.__layoutRows):
+            if (i % 2 != 0):
+                letterMatrix[i] = letterMatrix[i][::-1]
+        flippedLetterString = ("".join(letterMatrix.tolist()))
+        return flippedLetterString
 
     def defineExceptionStateFiveTen(self):
         minCat = self.returnMinuteCat()
@@ -136,13 +164,13 @@ dicEnd  =   {
 }
 
 
-def tellTime():
+def getMyLEDs():
     #Instanciate
-    ins = WordClock()
+    myWordClock = WordClock()
 
     #get Dictionary Keys
-    hourCat = ins.returnHourCat()
-    minCat = ins.returnMinuteCat()
+    hourCat = myWordClock.returnHourCat()
+    minCat = myWordClock.returnMinuteCat()
     randItIs = str(random.randint(1,2))
     randIntro = str(random.randint(1,8))
     randEnd = str(random.randint(1,4))
@@ -153,18 +181,20 @@ def tellTime():
 
 
     #pins to light up
-    ledList = ins.searchLedPixel(wordListToPass)
-    #print(ledList)
-
-    #Test for right Output
-    letterList = ins.getLetterString()
-    output = []
+    ledList = myWordClock.getLedList(wordListToPass)
+    flippedLedList = myWordClock.getFlippedLedList(ledList)
+    
+    #Test for right Output in Terminal
+    letterList = myWordClock.getLetterString()
+    flippedLetterList = myWordClock.getFlippedLetterString()
     for i in range(0, len(ledList)):
-         s = ledList[i]
-         f = letterList[s]
-         output.append(f)
-         #print(s , f)
-    return output, ledList
+         s = flippedLedList[i]
+         f = flippedLetterList[s]
+         y = ledList[i]
+         z = letterList[y]
+         print(s, f, y, z)
+
+    return ledList, flippedLedList
 
 
 #setup of raspi and neopixel
@@ -174,16 +204,15 @@ def ledShutOff(): #reset all pixel to 0
     pixels.fill((0,0,0))
 
 def lightUpLeds():
-    randRed= random.randint(1,155)
-    randGreen= random.randint(1,155)
-    randBlue=random.randint(1,155)
+    randRed= random.randint(1,20)
+    randGreen= random.randint(1,20)
+    randBlue=random.randint(1,20)
 
     ledShutOff() #calling function to turn LEDs off
-    wordOutput, ledList = tellTime() #get values for WordOutput and ledList
-    for i in ledList:                   # turn LEDs on
+    ledList, flippedLedList = getMyLEDs() #get values for WordOutput and ledList
+    for i in flippedLedList:                   # turn LEDs on
         pixels[i]= ((randRed,randGreen,randBlue)) #setting color of individual LED pixel
-    with open('output_test.txt', 'a') as f:
-        print(wordOutput, ledList, file= f)
+   
 
 lightUpLeds() #initially calling function
 
@@ -195,10 +224,6 @@ def schedTellTime():
 
 s.enter(60, 1, schedTellTime)
 s.run()
-
-
-atexit.register(ledShutOff)
-
 
 # Bei Abbruch des Programms alle LEDs aus
 # Ausführung des Programs bei boot
