@@ -164,6 +164,8 @@ dicEnd  =   {
 }
 
 
+
+
 def getMyLEDs():
     #Instanciate
     myWordClock = WordClock()
